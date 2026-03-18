@@ -337,7 +337,49 @@ function GradeStats({ trades, t }) {
 }
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
+const APP_PASSWORD = "adrianstats"; // ← schimbă asta cu parola ta
+
 export default function App() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem("et_auth") === "1");
+  const [pwInput, setPwInput] = useState("");
+  const [pwError, setPwError] = useState(false);
+
+  function handleLogin() {
+    if (pwInput === APP_PASSWORD) {
+      sessionStorage.setItem("et_auth", "1");
+      setAuthed(true);
+    } else {
+      setPwError(true);
+      setTimeout(() => setPwError(false), 2000);
+    }
+  }
+
+  if (!authed) {
+    return (
+      <div style={{ minHeight:"100vh", background:"#000", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"-apple-system,sans-serif" }}>
+        <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:24, padding:"48px 40px", width:360, textAlign:"center" }}>
+          <div style={{ width:52,height:52,borderRadius:14,background:"#f5f5f7",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px" }}>
+            <span style={{ color:"#000",fontSize:24,fontWeight:800 }}>E</span>
+          </div>
+          <div style={{ color:"#f5f5f7",fontSize:22,fontWeight:700,letterSpacing:-.5,marginBottom:6 }}>EdgeTrack</div>
+          <div style={{ color:"#6e6e73",fontSize:14,marginBottom:32 }}>Introdu parola pentru acces</div>
+          <input
+            type="password"
+            placeholder="Parolă"
+            value={pwInput}
+            onChange={e => setPwInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleLogin()}
+            style={{ width:"100%", background:"#1c1c1e", border:`1px solid ${pwError?"#ff453a":"#2a2a2a"}`, color:"#f5f5f7", padding:"13px 16px", borderRadius:12, fontSize:15, outline:"none", marginBottom:12, fontFamily:"-apple-system,sans-serif", textAlign:"center", letterSpacing:2, transition:"border .15s" }}
+          />
+          {pwError && <div style={{ color:"#ff453a",fontSize:13,marginBottom:12 }}>Parolă greșită</div>}
+          <button onClick={handleLogin}
+            style={{ width:"100%",background:"#0a84ff",color:"#fff",border:"none",borderRadius:12,padding:"13px",fontSize:15,fontWeight:600,cursor:"pointer" }}>
+            Intră
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [dark, setDark] = useState(true);
   const T = dark ? DARK : LIGHT;
   const [trades, setTrades]     = useState(() => load("tj2_trades")   || []);
